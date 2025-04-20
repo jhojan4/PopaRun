@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">PopaRun</string>
+    <string name="buttom_iniciar_sesion">Iniciar</string>
+    <string name="Password">Contraseña</string>
+    <string name="Users">Nombre de Usuario</string>
+    <string name="Registro">Registrar</string>
+    <string name="sinCuenta">¿No tienes cuenta?</string>
+    <string name="Email">Email</string>
+    <string name="PhoneNumber">Celular</string>
+    <string name="Pais">Pais</string>
+    <string name="RepeatPassword">Valida la contraseña</string>
 </resources>
