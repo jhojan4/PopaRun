@@ -1,4 +1,4 @@
-package edu.unicauca.example.poparun.login
+package edu.unicauca.example.poparun.screens.login
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -6,7 +6,6 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -25,6 +24,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -32,19 +32,22 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.compose.PopaRunTheme
-import edu.unicauca.example.poparun.LabelDatos
+import edu.unicauca.example.poparun.AppViewModelProvider
+import edu.unicauca.example.poparun.screens.LabelDatos
 import edu.unicauca.example.poparun.R
-import edu.unicauca.example.poparun.Screens
-import edu.unicauca.example.poparun.bottonRedondoStateless
+import edu.unicauca.example.poparun.login.LoginViewModel
+import edu.unicauca.example.poparun.screens.Screens
+import edu.unicauca.example.poparun.screens.bottonRedondoStateless
 
 @Composable
-fun loginScreen(navController: NavHostController, modifier: Modifier=Modifier) {
+fun loginScreen(navController: NavHostController, viewModel: LoginViewModel, modifier: Modifier=Modifier) {
+    val uiState = viewModel.uiState.collectAsState().value
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -70,13 +73,14 @@ fun loginScreen(navController: NavHostController, modifier: Modifier=Modifier) {
                 .fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
-            Card_InicioSesion(navController)
+            Card_InicioSesion(navController,viewModel)
         }
     }
 }
 
 @Composable
-fun Card_InicioSesion(navController: NavController, modifier: Modifier=Modifier) {
+fun Card_InicioSesion(navController: NavController, viewModel: LoginViewModel, modifier: Modifier=Modifier) {
+    val uiState = viewModel.uiState.collectAsState().value
     Box(modifier=modifier){
         Card(
             modifier = modifier
@@ -97,39 +101,37 @@ fun Card_InicioSesion(navController: NavController, modifier: Modifier=Modifier)
             ) {
                 imagenesPopa(R.drawable.logopopa, 150)
                 Spacer(modifier = Modifier.height(40.dp))
-                /*LabelDatos(
+                LabelDatos(
                     stringResource(R.string.Users),
+                    value = uiState.email,
+                    onValueChange = { viewModel.onEmailChange(it) },
                     Icons.Default.AccountCircle,
                     modifier = Modifier.size(width = 400.dp, height = 50.dp))
                 Spacer(modifier = Modifier.height(15.dp))
                 LabelDatos(
-                    stringResource(R.string.Password),Icons.Default.Lock,
+                    stringResource(R.string.Password),
+                    value = uiState.password,
+                    onValueChange = { viewModel.onPasswordChange(it) },
+                    Icons.Default.Lock,
+                    esPassword = true,
                     modifier = Modifier.size(width = 400.dp, height = 50.dp))
                 Spacer(modifier = Modifier.height(25.dp))
 
-                buttonRec(onClick = {navController.navigate(Screens.RegistroScreen.name)},
+                buttonRec(onClick = {viewModel.loginUser { navController.navigate(Screens.StartScreen.name) }},
                     stringResource(R.string.buttom_iniciar_sesion), modifier = Modifier
                 )
                 Spacer(modifier = Modifier.height(15.dp))
-                Text(stringResource(R.string.sinCuenta),modifier = Modifier.clickable { navController.navigate(Screens.RegistroScreen.name) })
-            */}
+                Text(stringResource(R.string.sinCuenta),modifier = Modifier.clickable { navController.navigate(
+                    Screens.RegistroScreen.name) })
+            }
         }
 
     }
 
 }
 
-@Preview(showBackground = true)
 @Composable
-fun LoginScreenPreview() {
-    PopaRunTheme {
-        val navController = rememberNavController()
-        loginScreen(navController = navController, modifier = Modifier)
-    }
-}
-
-@Composable
-fun imagenesPopa(imagenurl:Int,sizeImage: Int){
+fun imagenesPopa(imagenurl:Int,sizeImage: Int,modifier: Modifier=Modifier){
     Image(painter = painterResource(imagenurl),
         contentDescription = null,
         contentScale = ContentScale.Crop,

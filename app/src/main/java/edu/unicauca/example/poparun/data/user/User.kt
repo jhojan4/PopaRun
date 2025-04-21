@@ -1,4 +1,4 @@
-package edu.unicauca.example.poparun.data
+package edu.unicauca.example.poparun.data.user
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

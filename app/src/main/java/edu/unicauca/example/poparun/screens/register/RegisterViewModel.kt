@@ -1,22 +1,12 @@
-package edu.unicauca.example.poparun.register
+package edu.unicauca.example.poparun.screens.register
 
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.graphics.Color
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import edu.unicauca.example.poparun.data.PopaRunRepository
-import edu.unicauca.example.poparun.data.user
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
+import edu.unicauca.example.poparun.data.user.PopaRunRepository
+import edu.unicauca.example.poparun.data.user.user
 import kotlinx.coroutines.launch
 import java.security.MessageDigest
 
@@ -104,14 +94,28 @@ class RegisterViewModel(
         val bytes = MessageDigest.getInstance("SHA-256").digest(password.toByteArray())
         return bytes.joinToString("") { "%02x".format(it) }
     }
-    fun saveUser(onSuccess: () -> Unit) {
+    /*fun saveUser(onSuccess: () -> Unit) {
         viewModelScope.launch {
             val hashedPassword = hashPassword(userDetails.password)
             repository.insertUser(userDetails.copy(password = hashedPassword).toUser())
+            val hashedConfirmPassword = hashPassword(userDetails.confirmPassword)
+            repository.insertUser(userDetails.copy(confirmPassword = hashedConfirmPassword).toUser())
             onSuccess()
+
         }
 
+    }*/
+    fun saveUser(onSuccess: () -> Unit) {
+        viewModelScope.launch {
+            if (!passwordMatchError && isFormValid) {
+                val hashedPassword = hashPassword(userDetails.password)
+                val usuario = userDetails.copy(password = hashedPassword).toUser()
+                repository.insertUser(usuario)
+                onSuccess()
+            }
+        }
     }
+
 
 }
 data class UserDetails(

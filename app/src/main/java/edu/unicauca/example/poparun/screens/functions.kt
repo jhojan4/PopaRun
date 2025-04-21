@@ -1,4 +1,4 @@
-package edu.unicauca.example.poparun
+package edu.unicauca.example.poparun.screens
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.PaddingValues

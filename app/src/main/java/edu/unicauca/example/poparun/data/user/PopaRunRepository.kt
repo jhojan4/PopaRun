@@ -1,4 +1,4 @@
-package edu.unicauca.example.poparun.data
+package edu.unicauca.example.poparun.data.user
 
 import kotlinx.coroutines.flow.Flow
 
@@ -12,6 +12,7 @@ interface PopaRunRepository {
      * Retrieve an item from the given data source that matches with the [id].
      */
     fun getItemStream(id: Int): Flow<user?>
+    suspend fun getUserByEmail(email: String): user?
 
     /**
      * Insert item in the data source
@@ -27,4 +28,7 @@ interface PopaRunRepository {
      * Update item in the data source
      */
     suspend fun updateUser(user: user)
+
+    suspend fun getUserByUsernameAndPassword(email: String, password: String): user?
+
 }

@@ -9,4 +9,11 @@
     <string name="PhoneNumber">Celular</string>
     <string name="Pais">Pais</string>
     <string name="RepeatPassword">Valida la contraseña</string>
+    <string name="Start">Iniciar Actividad</string>
+    <string name="seleccionar_actividad">Seleccion tu actividad</string>
+    <string name="correr">Correr</string>
+    <string name="caminar">Caminar</string>
+    <string name="duration">Duración[minutes]</string>
+    <string name="distance">Distancia[Km]</string>
+    <string name="Calories">Calorias</string>
 </resources>

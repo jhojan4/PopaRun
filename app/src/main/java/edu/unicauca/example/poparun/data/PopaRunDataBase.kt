@@ -4,25 +4,30 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import edu.unicauca.example.poparun.data.actividades.Actividades
+import edu.unicauca.example.poparun.data.actividades.ActividadesDao
+import edu.unicauca.example.poparun.data.user.user
+import edu.unicauca.example.poparun.data.user.userDao
 
-@Database(entities = [user::class], version = 1, exportSchema = false)
+
+@Database(entities = [user::class, Actividades::class], version = 2, exportSchema = false)
+
 abstract class PopaRunDatabase : RoomDatabase() {
 
     abstract fun userDao(): userDao
+    abstract fun actividadesDao(): ActividadesDao // ⬅️ Añade el DAO para actividades
 
     companion object {
         @Volatile
         private var Instance: PopaRunDatabase? = null
 
         fun getDatabase(context: Context): PopaRunDatabase {
-            // if the Instance is not null, return it, otherwise create a new database instance.
             return Instance ?: synchronized(this) {
-                Room.databaseBuilder(context, PopaRunDatabase::class.java, "user_database")
-                    /**
-                     * Setting this option in your app's database builder means that Room
-                     * permanently deletes all data from the tables in your database when it
-                     * attempts to perform a migration with no defined migration path.
-                     */
+                Room.databaseBuilder(
+                    context,
+                    PopaRunDatabase::class.java,
+                    "user_database" // puedes cambiar el nombre si deseas
+                )
                     .fallbackToDestructiveMigration()
                     .build()
                     .also { Instance = it }

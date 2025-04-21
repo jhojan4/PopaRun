@@ -1,4 +1,4 @@
-package edu.unicauca.example.poparun.data
+package edu.unicauca.example.poparun.data.user
 
 import androidx.room.Dao
 import androidx.room.Delete
@@ -10,9 +10,14 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface userDao {
+    @Query("SELECT * FROM users WHERE email = :email AND password = :password LIMIT 1")
+    suspend fun getUserByUsernameAndPassword(email: String, password: String): user?
+
 
     @Query("SELECT * from users ORDER BY name ASC")
     fun getAllItems(): Flow<List<user>>
+    @Query("SELECT * FROM users WHERE email = :email LIMIT 1")
+    suspend fun getUserByEmail(email: String): user?
 
     @Query("SELECT * from users WHERE id = :id")
     fun getItem(id: Int): Flow<user>
