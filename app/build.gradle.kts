@@ -55,8 +55,11 @@ dependencies {
     //Room
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.foundation.layout.android)
+    implementation(libs.androidx.room.common.jvm)
     ksp("androidx.room:room-compiler:${rootProject.extra["room_version"]}")
     implementation(libs.androidx.room.ktx)
+    //iconos para darkmode, language, logout
+    implementation ("androidx.compose.material:material-icons-extended:1.4.3")
 
 
     testImplementation(libs.junit)
