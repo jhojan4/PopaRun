@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -28,6 +29,8 @@ fun CronometroPantalla() {
 
     val viewModel: CronometroViewModel = viewModel()
     val tiempo by viewModel.tiempo.collectAsState()
+    val distancia by viewModel.distancia.collectAsState()
+    val velocidad by viewModel.velocidad.collectAsState()
 
     Column(
         modifier = Modifier
@@ -58,6 +61,21 @@ fun CronometroPantalla() {
                 Text("Reiniciar")
             }
         }
+
+        Spacer(modifier = Modifier.height(32.dp))
+
+        // Cuadro de distancia y velocidad
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color(0xFFE0E0E0))
+                .padding(16.dp)
+        ) {
+            Text(text = "Distancia: ${"%.2f".format(distancia)} km", fontSize = 20.sp)
+            Text(text = "Velocidad: ${"%.2f".format(velocidad)} km/h", fontSize = 20.sp)
+        }
+
+
     }
 }
 

@@ -1,7 +1,8 @@
 plugins {
-    alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.kotlin.compose)
+    id("com.android.application")
+    id("org.jetbrains.kotlin.android")
+    id("org.jetbrains.kotlin.plugin.compose") version "2.0.0"
+    alias(libs.plugins.google.devtools.ksp)
 }
 
 android {
@@ -37,11 +38,21 @@ android {
     buildFeatures {
         compose = true
     }
+
+
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.5.10" // o la versión más reciente compatible con tu Compose
+    }
+
 }
 
+
 dependencies {
-    implementation ("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
-    implementation ("androidx.compose.foundation:foundation:1.7.8")
+
+//Room
+    implementation(libs.room.runtime)
+    implementation(libs.room.ktx)
+    ksp(libs.room.compiler)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -60,3 +71,4 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 }
+
