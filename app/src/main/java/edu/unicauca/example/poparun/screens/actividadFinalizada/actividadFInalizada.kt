@@ -1,88 +1,91 @@
 package edu.unicauca.example.poparun.screens.actividadFinalizada
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.navigation.compose.rememberNavController
+import edu.unicauca.example.poparun.AppViewModelProvider
+import edu.unicauca.example.poparun.viewmodel.ActivityFinishedViewModel
+import edu.unicauca.aplimovil.poparun.model.RegistroCronometro
 
 @Composable
-fun ActivityFinishedScreen(
-    navController: NavHostController,
-    duration: String,
-    distanceKm: Double,
-    avgPace: String,
-    calories: Int
-) {
-    Scaffold { padding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .padding(24.dp),
-            verticalArrangement = Arrangement.spacedBy(24.dp, Alignment.CenterVertically),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            /*Image(
-                painter = painterResource(id = R.drawable.finish_icon), // Usa un ícono decorativo
-                (contentDescription = "Actividad finalizada",
-                modifier = Modifier.size(120.dp)
-            )*/
+fun ActivityFinishedScreen(navController: NavHostController) {
+    val viewModel: ActivityFinishedViewModel = viewModel(factory = AppViewModelProvider.Factory)
+    val registro = viewModel.ultimoRegistro.value
 
-            Text(
-                text = "¡Actividad Finalizada!",
-                fontSize = 26.sp,
-                fontWeight = FontWeight.Bold
-            )
+    registro?.let {
+        val duration = formatDuration(it.tiempo)
+        val distance = it.distancia
+        val avgPace = calculateAvgPace(it.tiempo, it.distancia)
+        val calories = estimateCalories(it.tiempo, it.distancia)
 
-            Card(
-                shape = RoundedCornerShape(12.dp),
-                colors = CardDefaults.cardColors(containerColor = Color(0xFFE3F2FD)),
-                modifier = Modifier.fillMaxWidth()
+        Scaffold { padding ->
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding)
+                    .padding(24.dp),
+                verticalArrangement = Arrangement.spacedBy(24.dp, Alignment.CenterVertically),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Column(
-                    modifier = Modifier.padding(20.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                Text(
+                    text = "¡Actividad Finalizada!",
+                    fontSize = 26.sp,
+                    fontWeight = FontWeight.Bold
+                )
+
+                Card(
+                    shape = RoundedCornerShape(12.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color(0xFFE3F2FD)),
+                    modifier = Modifier.fillMaxWidth()
                 ) {
-                    InfoRow(label = "Duración", value = duration)
-                    InfoRow(label = "Distancia", value = "%.2f km".format(distanceKm))
-                    InfoRow(label = "Ritmo promedio", value = avgPace)
-                    InfoRow(label = "Calorías quemadas", value = "$calories kcal")
+                    Column(
+                        modifier = Modifier.padding(20.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        InfoRow(label = "Duración", value = duration)
+                        InfoRow(label = "Distancia", value = "%.2f km".format(distance))
+                        InfoRow(label = "Ritmo promedio", value = avgPace)
+                        InfoRow(label = "Calorías quemadas", value = "$calories kcal")
+                    }
+                }
+
+                Button(
+                    onClick = {
+                        navController.navigate("home") {
+                            popUpTo("actividadFinalizada") { inclusive = true }
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Guardar Actividad")
+                }
+
+                OutlinedButton(
+                    onClick = {
+                        navController.navigate("home") {
+                            popUpTo("actividadFinalizada") { inclusive = true }
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Descartar")
                 }
             }
-
-            Button(
-                onClick = {
-                    // TODO: guardar la actividad en la base de datos
-                    navController.navigate("home") {
-                        popUpTo("activityFinished") { inclusive = true }
-                    }
-                },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("Guardar Actividad")
-            }
-
-            OutlinedButton(
-                onClick = {
-                    navController.navigate("home") {
-                        popUpTo("activityFinished") { inclusive = true }
-                    }
-                },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("Descartar")
-            }
+        }
+    } ?: run {
+        // Mostrar un loader mientras se carga el registro
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator()
         }
     }
 }
@@ -98,16 +101,24 @@ fun InfoRow(label: String, value: String) {
     }
 }
 
-@Preview(showBackground = true, name = "Actividad Finalizada Preview")
-@Composable
-fun ActivityFinishedScreenPreview() {
-    val fakeNavController = rememberNavController()
+// 🔧 Función para convertir segundos en formato mm:ss
+fun formatDuration(seconds: Long): String {
+    val min = seconds / 60
+    val sec = seconds % 60
+    return "%02d:%02d".format(min, sec)
+}
 
-    ActivityFinishedScreen(
-        navController = fakeNavController,
-        duration = "42:17",
-        distanceKm = 6.75,
-        avgPace = "6:15 /km",
-        calories = 450
-    )
+// 🔧 Función para calcular ritmo promedio min/km
+fun calculateAvgPace(timeSeconds: Long, distanceKm: Double): String {
+    if (distanceKm <= 0) return "--:-- /km"
+    val minutes = timeSeconds.toDouble() / 60
+    val pace = minutes / distanceKm
+    val min = pace.toInt()
+    val sec = ((pace - min) * 60).toInt()
+    return "%d:%02d /km".format(min, sec)
+}
+
+// 🔧 Estimación simple de calorías
+fun estimateCalories(timeSeconds: Long, distanceKm: Double): Int {
+    return (distanceKm * 60).toInt() // Estimación: 60 kcal por km
 }

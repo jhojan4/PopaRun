@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModelProvider
 import edu.unicauca.example.poparun.login.LoginViewModel
 import edu.unicauca.example.poparun.screens.register.RegisterViewModel
 import edu.unicauca.example.poparun.screens.StartAct.StartViewModel
+import edu.unicauca.example.poparun.screens.actividadFinalizada.ActivityFinishedViewModel
 import edu.unicauca.example.poparun.screens.home.HomeViewModel
 
 
@@ -32,6 +33,10 @@ object AppViewModelProvider {
                     val userId = app.container.loggedInUserId
                     HomeViewModel(actividadesRepository, userId) as T
                 }
+
+                modelClass.isAssignableFrom(ActivityFinishedViewModel::class.java) ->
+                    ActivityFinishedViewModel(app) as T
+
 
 
                 else -> throw IllegalArgumentException("Unknown ViewModel class")
